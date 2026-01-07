@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stationnement Voitures</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+  <h1>Stationnement Voitures en temps réel</h1>
+
+  <input id="voitureId" type="text" placeholder="ID voiture MongoDB" />
+  <button id="btnGarer">Garer la voiture</button>
+
+  <h2>Voitures garées :</h2>
+  <ul id="listeVoitures"></ul>
+
+  <script>
+    // 1️⃣ Déclarer socket d'abord
+    const socket = io('http://localhost:3005');
+
+    // 2️⃣ Fonction pour garer la voiture
+    function garerVoiture() {
+      const id = document.getElementById('voitureId').value;
+      socket.emit('garer-voiture', { id });
+    }
+
+    // 3️⃣ Ajouter l'écoute du bouton après la déclaration de socket
+    document.getElementById('btnGarer').addEventListener('click', garerVoiture);
+
+    // 4️⃣ Écouter l'événement "voiture-garee"
+    socket.on('voiture-garee', (voiture) => {
+      const ul = document.getElementById('listeVoitures');
+      const li = document.createElement('li');
+      li.textContent = `Voiture ${voiture.marque} ${voiture.modele} (${voiture._id}) est garée !`;
+      ul.appendChild(li);
+    });
+  </script>
+</body>
+</html>
